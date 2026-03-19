@@ -7,6 +7,7 @@ import net.minecraft.Minecraft;
 import net.minecraft.PlayerControllerMP;
 import net.minecraft.World;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -39,10 +40,16 @@ public abstract class ItemInWorldManagerChainMinerMixin {
     private static boolean CONFIG_LOADED = false;
 
     @Unique
-    private static String LAST_HOLD_KEY_NAME = "";
+    private static String LAST_HOLD_BINDING = "";
+
+    @Unique
+    private static boolean LAST_IS_MOUSE_BINDING = false;
 
     @Unique
     private static int LAST_HOLD_KEY_CODE = Keyboard.KEY_GRAVE;
+
+    @Unique
+    private static int LAST_HOLD_MOUSE_BUTTON = -1;
 
     @Unique
     private static long LAST_ACTIVATION_HINT_MS = 0L;
@@ -184,7 +191,7 @@ public abstract class ItemInWorldManagerChainMinerMixin {
         Minecraft minecraft = Minecraft.getMinecraft();
         ChainMinerConfig.load(minecraft == null ? null : minecraft.mcDataDir);
         CONFIG_LOADED = true;
-        LAST_HOLD_KEY_NAME = "";
+        LAST_HOLD_BINDING = "";
     }
 
     @Unique
@@ -193,15 +200,31 @@ public abstract class ItemInWorldManagerChainMinerMixin {
             return false;
         }
 
-        if (!Keyboard.isCreated()) {
-            return false;
+        String holdBinding = ChainMinerConfig.getHoldBinding();
+        if (!holdBinding.equals(LAST_HOLD_BINDING)) {
+            LAST_HOLD_BINDING = holdBinding;
+
+            if (ChainMinerConfig.isMouseBinding()) {
+                LAST_IS_MOUSE_BINDING = true;
+                LAST_HOLD_MOUSE_BUTTON = ChainMinerConfig.getMouseButton();
+            } else {
+                LAST_IS_MOUSE_BINDING = false;
+                String holdKeyName = ChainMinerConfig.getHoldKeyName();
+                int keyCode = Keyboard.getKeyIndex(holdKeyName.toUpperCase(Locale.ROOT));
+                LAST_HOLD_KEY_CODE = keyCode > 0 ? keyCode : Keyboard.KEY_GRAVE;
+            }
         }
 
-        String holdKeyName = ChainMinerConfig.getHoldKeyName();
-        if (!holdKeyName.equals(LAST_HOLD_KEY_NAME)) {
-            LAST_HOLD_KEY_NAME = holdKeyName;
-            int keyCode = Keyboard.getKeyIndex(holdKeyName.toUpperCase(Locale.ROOT));
-            LAST_HOLD_KEY_CODE = keyCode > 0 ? keyCode : Keyboard.KEY_GRAVE;
+        if (LAST_IS_MOUSE_BINDING) {
+            if (!Mouse.isCreated()) {
+                return false;
+            }
+
+            return LAST_HOLD_MOUSE_BUTTON >= 0 && Mouse.isButtonDown(LAST_HOLD_MOUSE_BUTTON);
+        }
+
+        if (!Keyboard.isCreated()) {
+            return false;
         }
 
         return Keyboard.isKeyDown(LAST_HOLD_KEY_CODE);

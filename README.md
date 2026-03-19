@@ -23,7 +23,9 @@
 - 配置文件：`<.minecraft>/config/chainminer.properties`
 - 首次进入游戏会自动生成，支持：
    - `enabled=true|false`
-   - `holdKey=GRAVE`（例如可改成 `LSHIFT`、`LCONTROL`、`R`）
+   - `holdBinding=KEY:GRAVE`（键盘示例：`KEY:LSHIFT`、`KEY:LCONTROL`、`KEY:R`）
+   - `holdBinding=MOUSE:4`（鼠标按键示例：`MOUSE:3`、`MOUSE:4`、`MOUSE:5`）
+   - `holdKey=GRAVE`（旧字段，保留兼容）
    - `chainLimit=64`（范围 `1` 到 `512`）
 
 ## 行为说明

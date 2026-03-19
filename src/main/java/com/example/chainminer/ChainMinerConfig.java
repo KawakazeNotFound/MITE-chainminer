@@ -10,10 +10,11 @@ public final class ChainMinerConfig {
     private static final String FILE_NAME = "chainminer.properties";
     private static final String KEY_ENABLED = "enabled";
     private static final String KEY_HOLD_KEY = "holdKey";
+    private static final String KEY_HOLD_BINDING = "holdBinding";
     private static final String KEY_CHAIN_LIMIT = "chainLimit";
 
     private static boolean enabled = true;
-    private static String holdKeyName = "GRAVE";
+    private static String holdBinding = "KEY:GRAVE";
     private static int chainLimit = 64;
     private static File configFile;
 
@@ -37,7 +38,9 @@ public final class ChainMinerConfig {
         }
 
         enabled = parseBoolean(properties.getProperty(KEY_ENABLED), true);
-        holdKeyName = parseKeyName(properties.getProperty(KEY_HOLD_KEY), "GRAVE");
+        holdBinding = parseBinding(properties.getProperty(KEY_HOLD_BINDING),
+            properties.getProperty(KEY_HOLD_KEY),
+            "KEY:GRAVE");
         chainLimit = parseInt(properties.getProperty(KEY_CHAIN_LIMIT), 64, 1, 512);
 
         save();
@@ -50,7 +53,8 @@ public final class ChainMinerConfig {
 
         Properties output = new Properties();
         output.setProperty(KEY_ENABLED, String.valueOf(enabled));
-        output.setProperty(KEY_HOLD_KEY, holdKeyName);
+        output.setProperty(KEY_HOLD_BINDING, holdBinding);
+        output.setProperty(KEY_HOLD_KEY, getHoldKeyName());
         output.setProperty(KEY_CHAIN_LIMIT, String.valueOf(chainLimit));
 
         try (FileOutputStream outputStream = new FileOutputStream(configFile)) {
@@ -64,7 +68,46 @@ public final class ChainMinerConfig {
     }
 
     public static String getHoldKeyName() {
-        return holdKeyName;
+        int split = holdBinding.indexOf(':');
+        if (split <= 0 || split >= holdBinding.length() - 1) {
+            return "GRAVE";
+        }
+
+        String type = holdBinding.substring(0, split);
+        String value = holdBinding.substring(split + 1);
+        if (!"KEY".equals(type)) {
+            return "GRAVE";
+        }
+        return value;
+    }
+
+    public static String getHoldBinding() {
+        return holdBinding;
+    }
+
+    public static boolean isMouseBinding() {
+        return holdBinding.startsWith("MOUSE:");
+    }
+
+    public static int getMouseButton() {
+        if (!isMouseBinding()) {
+            return -1;
+        }
+
+        int split = holdBinding.indexOf(':');
+        if (split <= 0 || split >= holdBinding.length() - 1) {
+            return -1;
+        }
+
+        try {
+            int button = Integer.parseInt(holdBinding.substring(split + 1));
+            if (button < 0) {
+                return -1;
+            }
+            return button;
+        } catch (NumberFormatException ignored) {
+            return -1;
+        }
     }
 
     public static int getChainLimit() {
@@ -76,7 +119,19 @@ public final class ChainMinerConfig {
     }
 
     public static void setHoldKeyName(String holdKeyName) {
-        ChainMinerConfig.holdKeyName = parseKeyName(holdKeyName, ChainMinerConfig.holdKeyName);
+        String keyName = parseKeyName(holdKeyName, getHoldKeyName());
+        ChainMinerConfig.holdBinding = "KEY:" + keyName;
+    }
+
+    public static void setHoldMouseButton(int mouseButton) {
+        if (mouseButton < 0) {
+            return;
+        }
+        ChainMinerConfig.holdBinding = "MOUSE:" + mouseButton;
+    }
+
+    public static void setHoldBinding(String holdBinding) {
+        ChainMinerConfig.holdBinding = parseBinding(holdBinding, null, ChainMinerConfig.holdBinding);
     }
 
     public static void setChainLimit(int chainLimit) {
@@ -107,6 +162,57 @@ public final class ChainMinerConfig {
         }
 
         return trimmed.toUpperCase();
+    }
+
+    private static String parseBinding(String preferred, String legacyKey, String fallback) {
+        String parsedPreferred = parseBindingCore(preferred);
+        if (parsedPreferred != null) {
+            return parsedPreferred;
+        }
+
+        String parsedLegacy = parseBindingCore(legacyKey);
+        if (parsedLegacy != null) {
+            return parsedLegacy;
+        }
+
+        return fallback;
+    }
+
+    private static String parseBindingCore(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+
+        String upper = trimmed.toUpperCase();
+
+        if (upper.startsWith("KEY:")) {
+            String keyName = parseKeyName(upper.substring(4), "GRAVE");
+            return "KEY:" + keyName;
+        }
+
+        if (upper.startsWith("MOUSE:")) {
+            String rawButton = upper.substring(6).trim();
+            if (rawButton.isEmpty()) {
+                return null;
+            }
+
+            try {
+                int button = Integer.parseInt(rawButton);
+                if (button < 0) {
+                    return null;
+                }
+                return "MOUSE:" + button;
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+
+        return "KEY:" + parseKeyName(upper, "GRAVE");
     }
 
     private static int parseInt(String value, int fallback, int min, int max) {

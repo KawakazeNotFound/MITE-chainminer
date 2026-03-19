@@ -4,6 +4,7 @@ import com.example.chainminer.ChainMinerConfig;
 import net.minecraft.GuiButton;
 import net.minecraft.GuiScreen;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.util.Locale;
 
@@ -14,13 +15,13 @@ public class ChainMinerConfigScreen extends GuiScreen {
     private static final int BTN_CANCEL = 4;
 
     private boolean enabled;
-    private String holdKeyName;
+    private String holdBinding;
     private boolean waitingForKey;
 
     @Override
     public void initGui() {
         this.enabled = ChainMinerConfig.isEnabled();
-        this.holdKeyName = ChainMinerConfig.getHoldKeyName();
+        this.holdBinding = ChainMinerConfig.getHoldBinding();
         this.waitingForKey = false;
 
         this.buttonList.clear();
@@ -47,13 +48,13 @@ public class ChainMinerConfigScreen extends GuiScreen {
 
         if (button.id == BTN_SET_KEY) {
             this.waitingForKey = true;
-            button.displayString = "请按下一个按键...";
+            button.displayString = "请按下键盘或鼠标按键...";
             return;
         }
 
         if (button.id == BTN_SAVE) {
             ChainMinerConfig.setEnabled(this.enabled);
-            ChainMinerConfig.setHoldKeyName(this.holdKeyName);
+            ChainMinerConfig.setHoldBinding(this.holdBinding);
             ChainMinerConfig.save();
             this.mc.displayGuiScreen((GuiScreen) null);
             return;
@@ -70,7 +71,7 @@ public class ChainMinerConfigScreen extends GuiScreen {
             if (keyCode != Keyboard.KEY_ESCAPE) {
                 String keyName = Keyboard.getKeyName(keyCode);
                 if (keyName != null && !keyName.isEmpty()) {
-                    this.holdKeyName = keyName.toUpperCase(Locale.ROOT);
+                    this.holdBinding = "KEY:" + keyName.toUpperCase(Locale.ROOT);
                 }
             }
 
@@ -81,6 +82,22 @@ public class ChainMinerConfigScreen extends GuiScreen {
         }
 
         super.keyTyped(typedChar, keyCode);
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        if (this.waitingForKey) {
+            if (mouseButton >= 0) {
+                this.holdBinding = "MOUSE:" + mouseButton;
+            }
+
+            this.waitingForKey = false;
+            GuiButton keyButton = (GuiButton) this.buttonList.get(1);
+            keyButton.displayString = getKeyText();
+            return;
+        }
+
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -96,6 +113,30 @@ public class ChainMinerConfigScreen extends GuiScreen {
     }
 
     private String getKeyText() {
-        return "触发按键: " + this.holdKeyName;
+        if (this.holdBinding == null || this.holdBinding.isEmpty()) {
+            return "触发按键: KEY:GRAVE";
+        }
+
+        if (this.holdBinding.startsWith("MOUSE:")) {
+            String raw = this.holdBinding.substring("MOUSE:".length());
+            int button = -1;
+            try {
+                button = Integer.parseInt(raw);
+            } catch (NumberFormatException ignored) {
+            }
+
+            String buttonName = Mouse.isCreated() && button >= 0 ? Mouse.getButtonName(button) : null;
+            if (buttonName == null || buttonName.isEmpty()) {
+                buttonName = "BUTTON" + button;
+            }
+
+            return "触发按键: 鼠标 " + buttonName + " (" + button + ")";
+        }
+
+        if (this.holdBinding.startsWith("KEY:")) {
+            return "触发按键: " + this.holdBinding.substring("KEY:".length());
+        }
+
+        return "触发按键: " + this.holdBinding;
     }
 }
