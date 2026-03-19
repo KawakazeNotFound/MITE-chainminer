@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.example.chainminer.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "client": [
+    "ItemInWorldManagerChainMinerMixin",
+    "ClientPlayerChainMinerCommandMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

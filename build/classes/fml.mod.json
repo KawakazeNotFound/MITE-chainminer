@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "chainminer",
+  "version": "0.0.1",
+  "name": "ChainMiner",
+  "description": "按住指定按键时（默认为~）触发连锁挖矿。\n 开发者: \n    Ryosume \n    GPT-Codex-5.3",
+  "environment": "*",
+  "icon": "assets/chainminer/icon.png",
+  "entrypoints": {
+    "main": [
+      "com.example.chainminer.ChainMinerMod"
+    ]
+  },
+  "mixins": [
+    "chainminer.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "1.6.4-mite"
+  }
+}
