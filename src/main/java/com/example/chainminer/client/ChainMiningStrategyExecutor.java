@@ -84,9 +84,9 @@ public final class ChainMiningStrategyExecutor {
         visited.add(pack(originX, originY, originZ));
 
         int queued = 0;
-        int chainLimit = ChainMinerConfig.getChainLimit();
+        int additionalLimit = Math.max(0, ChainMinerConfig.getChainLimit() - 1);
 
-        while (!queue.isEmpty() && queued < chainLimit) {
+        while (!queue.isEmpty() && queued < additionalLimit) {
             BlockPos current = queue.removeFirst();
 
             for (int[] offset : OFFSETS_26) {
@@ -111,7 +111,7 @@ public final class ChainMiningStrategyExecutor {
                 queued++;
                 queue.addLast(new BlockPos(nx, ny, nz));
 
-                if (queued >= chainLimit) {
+                if (queued >= additionalLimit) {
                     break;
                 }
             }
