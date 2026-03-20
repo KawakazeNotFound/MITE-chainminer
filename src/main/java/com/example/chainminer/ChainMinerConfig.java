@@ -14,12 +14,14 @@ public final class ChainMinerConfig {
     private static final String KEY_CHAIN_LIMIT = "chainLimit";
     private static final String KEY_HUD_X = "hudX";
     private static final String KEY_HUD_Y = "hudY";
+    private static final String KEY_MODE = "mode";
 
     private static boolean enabled = true;
     private static String holdBinding = "KEY:GRAVE";
     private static int chainLimit = 64;
     private static int hudX = 2;
     private static int hudY = 22;
+    private static ChainMinerMode currentMode = ChainMinerMode.SHAPELESS;
     private static File configFile;
 
     private ChainMinerConfig() {
@@ -48,6 +50,7 @@ public final class ChainMinerConfig {
         chainLimit = parseInt(properties.getProperty(KEY_CHAIN_LIMIT), 64, 1, 512);
         hudX = parseInt(properties.getProperty(KEY_HUD_X), 2, 0, 10000);
         hudY = parseInt(properties.getProperty(KEY_HUD_Y), 22, 0, 10000);
+        currentMode = ChainMinerMode.fromId(parseInt(properties.getProperty(KEY_MODE), 0, 0, 100));
 
         save();
     }
@@ -64,6 +67,7 @@ public final class ChainMinerConfig {
         output.setProperty(KEY_CHAIN_LIMIT, String.valueOf(chainLimit));
         output.setProperty(KEY_HUD_X, String.valueOf(hudX));
         output.setProperty(KEY_HUD_Y, String.valueOf(hudY));
+        output.setProperty(KEY_MODE, String.valueOf(currentMode.getId()));
 
         try (FileOutputStream outputStream = new FileOutputStream(configFile)) {
             output.store(outputStream, "ChainMiner config");
@@ -175,6 +179,20 @@ public final class ChainMinerConfig {
 
         hudX = x;
         hudY = y;
+    }
+
+    public static ChainMinerMode getCurrentMode() {
+        return currentMode;
+    }
+
+    public static void setCurrentMode(ChainMinerMode mode) {
+        if (mode != null) {
+            ChainMinerConfig.currentMode = mode;
+        }
+    }
+
+    public static void cycleMode() {
+        ChainMinerConfig.currentMode = ChainMinerConfig.currentMode.next();
     }
 
     private static boolean parseBoolean(String value, boolean fallback) {

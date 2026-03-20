@@ -1,6 +1,7 @@
 package com.example.chainminer.mixin;
 
 import com.example.chainminer.ChainMinerConfig;
+import com.example.chainminer.ChainMinerMode;
 import com.example.chainminer.client.ChainMinerActivationKeyState;
 import net.minecraft.FontRenderer;
 import net.minecraft.GuiIngame;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GuiIngameChainMinerHudMixin {
     private static final String ACTIVATED_TEXT = "[ChainMiner] 已激活";
     private static final int HUD_COLOR = 0x55FF55;
+    private static final int MODE_COLOR = 0xFFFF00;
     private static boolean CONFIG_LOADED = false;
 
     @Inject(method = "renderGameOverlay(FZII)V", at = @At("TAIL"), require = 0)
@@ -37,6 +39,13 @@ public class GuiIngameChainMinerHudMixin {
             CONFIG_LOADED = true;
         }
 
-        fontRenderer.drawStringWithShadow(ACTIVATED_TEXT, ChainMinerConfig.getHudX(), ChainMinerConfig.getHudY(), HUD_COLOR);
+        int hudX = ChainMinerConfig.getHudX();
+        int hudY = ChainMinerConfig.getHudY();
+
+        fontRenderer.drawStringWithShadow(ACTIVATED_TEXT, hudX, hudY, HUD_COLOR);
+
+        ChainMinerMode mode = ChainMinerConfig.getCurrentMode();
+        String modeText = "模式: " + mode.getDisplayName();
+        fontRenderer.drawStringWithShadow(modeText, hudX, hudY + 10, MODE_COLOR);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.chainminer.mixin;
 
 import com.example.chainminer.ChainMinerConfig;
+import com.example.chainminer.ChainMinerMode;
 import com.example.chainminer.client.ChainMinerActivationKeyState;
+import com.example.chainminer.client.ChainMiningStrategyExecutor;
 import com.example.chainminer.network.ChainMinerPacket;
 import net.minecraft.EnumFace;
 import net.minecraft.Minecraft;
@@ -14,11 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Mixin(PlayerControllerMP.class)
 public abstract class ItemInWorldManagerChainMinerMixin {
@@ -89,61 +87,15 @@ public abstract class ItemInWorldManagerChainMinerMixin {
     @Unique
     private void mineConnectedBlocks(BreakContext context) {
         Minecraft minecraft = Minecraft.getMinecraft();
-        World world = minecraft == null ? null : minecraft.theWorld;
-        if (world == null) {
+        if (minecraft == null || minecraft.thePlayer == null) {
             return;
         }
 
-        ArrayDeque<BlockPos> queue = new ArrayDeque<BlockPos>();
-        Set<Long> visited = new HashSet<Long>();
-        List<ChainMinerPacket.BlockBreak> blocksToBreak = new ArrayList<>();
+        List<ChainMinerPacket.BlockBreak> blocksToBreak = ChainMiningStrategyExecutor.executeChainMining(
+            context.x, context.y, context.z, context.blockId, context.side.ordinal()
+        );
 
-        queue.add(new BlockPos(context.x, context.y, context.z));
-        visited.add(pack(context.x, context.y, context.z));
-        blocksToBreak.add(new ChainMinerPacket.BlockBreak(context.x, context.y, context.z, context.side.ordinal()));
-
-        int queued = 0;
-        int chainLimit = ChainMinerConfig.getChainLimit();
-        
-        while (!queue.isEmpty() && queued < chainLimit) {
-            BlockPos current = queue.removeFirst();
-
-            for (int[] offset : OFFSETS) {
-                int nx = current.x + offset[0];
-                int ny = current.y + offset[1];
-                int nz = current.z + offset[2];
-
-                if (ny < 0 || ny > 255) {
-                    continue;
-                }
-
-                long packed = pack(nx, ny, nz);
-                if (!visited.add(packed)) {
-                    continue;
-                }
-
-                if (world.getBlockId(nx, ny, nz) != context.blockId) {
-                    continue;
-                }
-
-                // 添加到破坏列表而不是直接破坏
-                blocksToBreak.add(new ChainMinerPacket.BlockBreak(nx, ny, nz, context.side.ordinal()));
-                queued++;
-                queue.addLast(new BlockPos(nx, ny, nz));
-
-                if (queued >= chainLimit) {
-                    break;
-                }
-            }
-        }
-
-        // 发送数据包到服务器
         if (blocksToBreak.size() > 1) {
-            long now = System.currentTimeMillis();
-            if (minecraft.ingameGUI != null && now - LAST_ACTIVATION_HINT_MS > 800L) {
-                LAST_ACTIVATION_HINT_MS = now;
-            }
-            // 只有当有连锁方块时才发送（>1是因为包含原始方块）
             minecraft.thePlayer.sendQueue.addToSendQueue(new ChainMinerPacket(blocksToBreak));
         }
     }

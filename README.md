@@ -1,7 +1,11 @@
 # Chain Miner (MITE 1.6.4 / FishModLoader)
 
 ## 功能
-- 按住指定按键再挖方块，会继续挖掘与其 **六向相邻** 的同类方块。
+- 按住指定按键再挖方块，会继续挖掘与其相关的同类方块。
+- 支持 **三种连锁模式**：
+  1. **不定形**（默认）：26方向无约束连锁
+  2. **小隧道**：沿玩家视线方向直线开采
+  3. **逃生通道**：梯形斜向开采（根据玩家视角上下）
 - 默认按键为飘号键（`GRAVE`，即 `~` / `` ` ``）。
 - 默认最多连锁 `64` 个方块（可在配置中修改）。
 
@@ -28,10 +32,20 @@
    - `holdKey=GRAVE`（旧字段，保留兼容）
    - `chainLimit=64`（范围 `1` 到 `512`）
    - `hudX=2`、`hudY=22`（左上角激活提示位置）
+   - `mode=0`（当前连锁模式：0=不定形，1=小隧道，2=逃生通道）
 
 - 聊天命令：
+   - `/chainminer key <按键名|mouse3/mouse4/mouse5>` 设置激活按键
+   - `/chainminer enable <true/false>` 启用/禁用连锁
+   - `/chainminer limit <1-512>` 设置连锁数量限制
    - `/chainminer hud <x> <y>` 设置激活提示坐标
    - `/chainminer hud show` 查看当前坐标
+   - `/chainminer show` 查看所有配置
+
+- 模式切换：
+   - **按住 Shift + 鼠标滚轮** 切换连锁模式
+   - 当前模式会显示在左上角 HUD（黄色）
+   - 切换时会在聊天中显示新模式名称和描述
 
 ## 行为说明
 - 注入点：`net.minecraft.PlayerControllerMP#onPlayerDestroyBlock(IIII)Z`（客户端）
