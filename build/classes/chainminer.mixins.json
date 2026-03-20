@@ -8,6 +8,7 @@
     "ItemInWorldManagerChainMinerMixin",
     "ClientPlayerChainMinerCommandMixin",
     "MinecraftChainMinerModeSwitchMixin",
+    "InventoryPlayerChainMinerScrollLockMixin",
     "GuiIngameChainMinerHudMixin"
   ],
   "injectors": {
