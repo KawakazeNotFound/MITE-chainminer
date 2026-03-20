@@ -2,6 +2,7 @@ package com.ryosume.chainminer.client;
 
 import com.ryosume.chainminer.ChainMinerConfig;
 import com.ryosume.chainminer.network.ChainMinerPacket;
+import net.minecraft.Block;
 import net.minecraft.Entity;
 import net.minecraft.EntityPlayer;
 import net.minecraft.Minecraft;
@@ -109,7 +110,8 @@ public final class ChainMiningStrategyExecutor {
                     continue;
                 }
 
-                if (world.getBlockId(nx, ny, nz) != blockId) {
+                int currentBlockId = world.getBlockId(nx, ny, nz);
+                if (!isEquivalentTargetBlock(blockId, currentBlockId)) {
                     continue;
                 }
 
@@ -149,7 +151,7 @@ public final class ChainMiningStrategyExecutor {
             }
 
             int currentBlockId = world.getBlockId(nx, ny, nz);
-            if (currentBlockId != blockId) {
+            if (!isEquivalentTargetBlock(blockId, currentBlockId)) {
                 break;
             }
 
@@ -182,7 +184,7 @@ public final class ChainMiningStrategyExecutor {
             }
 
             int currentBlockId = world.getBlockId(nx, ny, nz);
-            if (currentBlockId != blockId) {
+            if (!isEquivalentTargetBlock(blockId, currentBlockId)) {
                 break;
             }
 
@@ -213,6 +215,23 @@ public final class ChainMiningStrategyExecutor {
         return ((long) (x & 0x3FFFFFF) << 38)
                 | ((long) (z & 0x3FFFFFF) << 12)
                 | (y & 0xFFF);
+    }
+
+    private static boolean isEquivalentTargetBlock(int originBlockId, int currentBlockId) {
+        if (originBlockId == currentBlockId) {
+            return true;
+        }
+
+        int redstoneOreId = Block.oreRedstone == null ? -1 : Block.oreRedstone.blockID;
+        int glowingRedstoneOreId = Block.oreRedstoneGlowing == null ? -1 : Block.oreRedstoneGlowing.blockID;
+
+        if (redstoneOreId < 0 || glowingRedstoneOreId < 0) {
+            return false;
+        }
+
+        boolean originIsRedstoneOre = originBlockId == redstoneOreId || originBlockId == glowingRedstoneOreId;
+        boolean currentIsRedstoneOre = currentBlockId == redstoneOreId || currentBlockId == glowingRedstoneOreId;
+        return originIsRedstoneOre && currentIsRedstoneOre;
     }
 
     private static final class BlockPos {

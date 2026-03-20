@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "chainminer",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "name": "ChainMiner",
   "description": "按住指定按键时（默认为~）触发连锁挖矿。\n使用/cm help查看使用方法\n 开发者: \n    Ryosume \n    GPT-Codex-5.3",
   "environment": "*",
