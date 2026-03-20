@@ -12,15 +12,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public abstract class MinecraftChainMinerModeSwitchMixin {
+    private static boolean wasSwitchComboActive = false;
+
     @Inject(method = "runTick()V", at = @At("HEAD"), require = 0)
     private void chainMiner$handleModeSwitchByWheel(CallbackInfo ci) {
         if (!ChainMinerConfig.isEnabled()) {
+            wasSwitchComboActive = false;
             return;
         }
 
         boolean hasShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean hasActivationKey = ChainMinerActivationKeyState.isActivationDown();
-        if (!hasShift || !hasActivationKey) {
+        boolean switchComboActive = hasShift && hasActivationKey;
+        if (!switchComboActive) {
+            wasSwitchComboActive = false;
+            return;
+        }
+
+        if (!wasSwitchComboActive) {
+            Mouse.getDWheel();
+            wasSwitchComboActive = true;
             return;
         }
 
