@@ -12,10 +12,14 @@ public final class ChainMinerConfig {
     private static final String KEY_HOLD_KEY = "holdKey";
     private static final String KEY_HOLD_BINDING = "holdBinding";
     private static final String KEY_CHAIN_LIMIT = "chainLimit";
+    private static final String KEY_HUD_X = "hudX";
+    private static final String KEY_HUD_Y = "hudY";
 
     private static boolean enabled = true;
     private static String holdBinding = "KEY:GRAVE";
     private static int chainLimit = 64;
+    private static int hudX = 2;
+    private static int hudY = 22;
     private static File configFile;
 
     private ChainMinerConfig() {
@@ -42,6 +46,8 @@ public final class ChainMinerConfig {
             properties.getProperty(KEY_HOLD_KEY),
             "KEY:GRAVE");
         chainLimit = parseInt(properties.getProperty(KEY_CHAIN_LIMIT), 64, 1, 512);
+        hudX = parseInt(properties.getProperty(KEY_HUD_X), 2, 0, 10000);
+        hudY = parseInt(properties.getProperty(KEY_HUD_Y), 22, 0, 10000);
 
         save();
     }
@@ -56,6 +62,8 @@ public final class ChainMinerConfig {
         output.setProperty(KEY_HOLD_BINDING, holdBinding);
         output.setProperty(KEY_HOLD_KEY, getHoldKeyName());
         output.setProperty(KEY_CHAIN_LIMIT, String.valueOf(chainLimit));
+        output.setProperty(KEY_HUD_X, String.valueOf(hudX));
+        output.setProperty(KEY_HUD_Y, String.valueOf(hudY));
 
         try (FileOutputStream outputStream = new FileOutputStream(configFile)) {
             output.store(outputStream, "ChainMiner config");
@@ -114,6 +122,14 @@ public final class ChainMinerConfig {
         return chainLimit;
     }
 
+    public static int getHudX() {
+        return hudX;
+    }
+
+    public static int getHudY() {
+        return hudY;
+    }
+
     public static void setEnabled(boolean enabled) {
         ChainMinerConfig.enabled = enabled;
     }
@@ -142,6 +158,23 @@ public final class ChainMinerConfig {
         } else {
             ChainMinerConfig.chainLimit = chainLimit;
         }
+    }
+
+    public static void setHudPosition(int x, int y) {
+        if (x < 0) {
+            x = 0;
+        } else if (x > 10000) {
+            x = 10000;
+        }
+
+        if (y < 0) {
+            y = 0;
+        } else if (y > 10000) {
+            y = 10000;
+        }
+
+        hudX = x;
+        hudY = y;
     }
 
     private static boolean parseBoolean(String value, boolean fallback) {

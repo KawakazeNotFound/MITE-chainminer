@@ -60,6 +60,8 @@ public abstract class ClientPlayerChainMinerCommandMixin {
             this.receiveChatMessage("  /chainminer key <按键名|mouse3/mouse4/mouse5>", EnumChatFormatting.YELLOW);
             this.receiveChatMessage("  /chainminer enable <true/false>", EnumChatFormatting.YELLOW);
             this.receiveChatMessage("  /chainminer limit <1-512>", EnumChatFormatting.YELLOW);
+            this.receiveChatMessage("  /chainminer hud <x> <y>", EnumChatFormatting.YELLOW);
+            this.receiveChatMessage("  /chainminer hud show", EnumChatFormatting.YELLOW);
             this.receiveChatMessage("  /chainminer show", EnumChatFormatting.YELLOW);
             return true;
         }
@@ -69,7 +71,8 @@ public abstract class ClientPlayerChainMinerCommandMixin {
         if (sub.equals("show")) {
             this.receiveChatMessage("[ChainMiner] enabled=" + ChainMinerConfig.isEnabled()
                     + ", holdBinding=" + chainMiner$describeBinding()
-                    + ", chainLimit=" + ChainMinerConfig.getChainLimit(), EnumChatFormatting.GREEN);
+                    + ", chainLimit=" + ChainMinerConfig.getChainLimit()
+                    + ", hud=(" + ChainMinerConfig.getHudX() + "," + ChainMinerConfig.getHudY() + ")", EnumChatFormatting.GREEN);
             return true;
         }
 
@@ -133,6 +136,30 @@ public abstract class ClientPlayerChainMinerCommandMixin {
                 this.receiveChatMessage("[ChainMiner] 连锁上限已设置为: " + ChainMinerConfig.getChainLimit(), EnumChatFormatting.GREEN);
             } catch (NumberFormatException e) {
                 this.receiveChatMessage("[ChainMiner] limit 必须是数字", EnumChatFormatting.RED);
+            }
+
+            return true;
+        }
+
+        if (sub.equals("hud")) {
+            if (parts.length == 3 && parts[2].equalsIgnoreCase("show")) {
+                this.receiveChatMessage("[ChainMiner] HUD 位置: (" + ChainMinerConfig.getHudX() + ", " + ChainMinerConfig.getHudY() + ")", EnumChatFormatting.GREEN);
+                return true;
+            }
+
+            if (parts.length < 4) {
+                this.receiveChatMessage("[ChainMiner] 用法: /chainminer hud <x> <y> 或 /chainminer hud show", EnumChatFormatting.RED);
+                return true;
+            }
+
+            try {
+                int hudX = Integer.parseInt(parts[2]);
+                int hudY = Integer.parseInt(parts[3]);
+                ChainMinerConfig.setHudPosition(hudX, hudY);
+                ChainMinerConfig.save();
+                this.receiveChatMessage("[ChainMiner] HUD 位置已设置为: (" + ChainMinerConfig.getHudX() + ", " + ChainMinerConfig.getHudY() + ")", EnumChatFormatting.GREEN);
+            } catch (NumberFormatException e) {
+                this.receiveChatMessage("[ChainMiner] hud x/y 必须是数字", EnumChatFormatting.RED);
             }
 
             return true;

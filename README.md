@@ -27,6 +27,11 @@
    - `holdBinding=MOUSE:4`（鼠标按键示例：`MOUSE:3`、`MOUSE:4`、`MOUSE:5`）
    - `holdKey=GRAVE`（旧字段，保留兼容）
    - `chainLimit=64`（范围 `1` 到 `512`）
+   - `hudX=2`、`hudY=22`（左上角激活提示位置）
+
+- 聊天命令：
+   - `/chainminer hud <x> <y>` 设置激活提示坐标
+   - `/chainminer hud show` 查看当前坐标
 
 ## 行为说明
 - 注入点：`net.minecraft.PlayerControllerMP#onPlayerDestroyBlock(IIII)Z`（客户端）
