@@ -1,8 +1,10 @@
 package com.example.chainminer.mixin;
 
 import com.example.chainminer.ChainMinerConfig;
+import com.example.chainminer.client.ChainMinerActivationKeyState;
 import net.minecraft.EntityClientPlayerMP;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,15 +17,19 @@ public abstract class ClientPlayerChainMinerModeSwitchMixin {
     @Inject(method = "onUpdate()V", at = @At("HEAD"), require = 0)
     private void chainMiner$onUpdateCheckModeSwitch(CallbackInfo ci) {
         if (!ChainMinerConfig.isEnabled()) {
-            return;
-        }
-
-        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
             lastMouseScroll = 0;
             return;
         }
 
-        int currentScroll = org.lwjgl.input.Mouse.getDWheel();
+        boolean hasShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        boolean hasActivationKey = ChainMinerActivationKeyState.isActivationDown();
+
+        if (!hasShift || !hasActivationKey) {
+            lastMouseScroll = 0;
+            return;
+        }
+
+        int currentScroll = Mouse.getDWheel();
         if (lastMouseScroll == currentScroll || currentScroll == 0) {
             return;
         }
