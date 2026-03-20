@@ -54,8 +54,7 @@ public class ChainMinerPacket extends Packet {
     }
 
     private void processServer(NetServerHandler handler) {
-        // NetServerHandler 有 playerEntity 字段
-        EntityPlayer player = handler.playerEntity;
+        ServerPlayer player = handler.playerEntity;
         if (player == null || player.worldObj == null) {
             return;
         }
@@ -78,8 +77,7 @@ public class ChainMinerPacket extends Packet {
             return;
         }
 
-        // 收集要破坏的方块信息
-        List<BlockBreakPosition> breakPositions = new ArrayList<>();
+        int chainedMined = 0;
         
         // 遍历所有要破坏的方块（跳过第一个）
         for (int i = 1; i < blocks.size(); i++) {
@@ -94,68 +92,19 @@ public class ChainMinerPacket extends Packet {
                 continue;
             }
 
-            // 获取方块和元数据
             int blockId = world.getBlockId(block.x, block.y, block.z);
             if (blockId <= 0) {
                 continue;
             }
-            
-            Block blockObj = Block.blocksList[blockId];
-            if (blockObj == null) {
-                continue;
+
+            if (player.theItemInWorldManager != null && player.theItemInWorldManager.tryHarvestBlock(block.x, block.y, block.z)) {
+                chainedMined++;
             }
-            
-            int metadata = world.getBlockMetadata(block.x, block.y, block.z);
-            
-            // 生成掉落物但不生成实体，只收集ItemStack
-            BlockBreakInfo breakInfo = new BlockBreakInfo(world, block.x, block.y, block.z);
-            breakInfo.setBlock(blockObj, metadata);
-            // 记录要破坏的方块位置
-            breakPositions.add(new BlockBreakPosition(block.x, block.y, block.z, blockObj, metadata));
-        }
-        
-        // 在原始方块位置收集该方块的掉落物
-        int originBlockId = world.getBlockId(originBlock.x, originBlock.y, originBlock.z);
-        if (originBlockId > 0) {
-            Block originBlockObj = Block.blocksList[originBlockId];
-            if (originBlockObj != null) {
-                int originMetadata = world.getBlockMetadata(originBlock.x, originBlock.y, originBlock.z);
-                BlockBreakInfo originBreakInfo = new BlockBreakInfo(world, originBlock.x, originBlock.y, originBlock.z);
-                originBreakInfo.setBlock(originBlockObj, originMetadata);
-                // 这个在客户端已经生成了，服务器这里跳过
-            }
-        }
-        
-        // 现在在原始点生成所有连锁方块的掉落物
-        for (BlockBreakPosition breakPos : breakPositions) {
-            BlockBreakInfo breakInfo = new BlockBreakInfo(world, originBlock.x, originBlock.y, originBlock.z);
-            breakInfo.setBlock(breakPos.block, breakPos.metadata);
-            breakPos.block.dropBlockAsEntityItem(breakInfo);
-            
-            // 破坏该方块
-            world.setBlockToAir(breakPos.x, breakPos.y, breakPos.z);
         }
 
-        int totalMined = breakPositions.size() + 1;
+        int totalMined = chainedMined + 1;
         handler.sendChatToPlayer("[Ryosume的连锁挖矿] 本次连锁: " + totalMined + " 个方块喵~", EnumChatFormatting.GREEN);
         System.out.println("[ChainMiner] " + player.getEntityName() + " chained " + totalMined + " blocks");
-    }
-    
-    /**
-     * 记录需要破坏的方块位置和类型信息
-     */
-    private static class BlockBreakPosition {
-        int x, y, z;
-        Block block;
-        int metadata;
-        
-        BlockBreakPosition(int x, int y, int z, Block block, int metadata) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.block = block;
-            this.metadata = metadata;
-        }
     }
 
     @Override
