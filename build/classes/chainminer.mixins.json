@@ -6,7 +6,8 @@
   "mixins": [],
   "client": [
     "ItemInWorldManagerChainMinerMixin",
-    "ClientPlayerChainMinerCommandMixin"
+    "ClientPlayerChainMinerCommandMixin",
+    "GuiIngameChainMinerHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
