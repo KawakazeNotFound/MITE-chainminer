@@ -49,31 +49,37 @@ public final class ChainMiningStrategyExecutor {
     }
 
     public static int previewCurrentTargetChainCount() {
+        return previewCurrentTargetChainBlocks().size();
+    }
+
+    public static List<ChainMinerPacket.BlockBreak> previewCurrentTargetChainBlocks() {
         Minecraft minecraft = Minecraft.getMinecraft();
         if (minecraft == null || minecraft.theWorld == null || minecraft.thePlayer == null) {
-            return 0;
+            return new ArrayList<>();
         }
 
-        RaycastCollision hitResult = minecraft.objectMouseOver;
+        return previewTargetChainBlocks(minecraft.objectMouseOver);
+    }
+
+    public static List<ChainMinerPacket.BlockBreak> previewTargetChainBlocks(RaycastCollision hitResult) {
         if (hitResult == null || !hitResult.isBlock()) {
-            return 0;
+            return new ArrayList<>();
         }
 
         int x = hitResult.block_hit_x;
         int y = hitResult.block_hit_y;
         int z = hitResult.block_hit_z;
         if (y < 0 || y > 255) {
-            return 0;
+            return new ArrayList<>();
         }
 
         int blockId = hitResult.getBlockHitID();
         if (blockId <= 0) {
-            return 0;
+            return new ArrayList<>();
         }
 
         int sideOrdinal = hitResult.face_hit == null ? 0 : hitResult.face_hit.ordinal();
-        List<ChainMinerPacket.BlockBreak> blocks = executeChainMining(x, y, z, blockId, sideOrdinal);
-        return blocks.size();
+        return executeChainMining(x, y, z, blockId, sideOrdinal);
     }
 
     private static void executeShapeless(World world, int originX, int originY, int originZ, int blockId, int sideOrdinal, List<ChainMinerPacket.BlockBreak> result) {

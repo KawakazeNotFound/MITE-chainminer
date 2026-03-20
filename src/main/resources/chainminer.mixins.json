@@ -5,10 +5,12 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [],
   "client": [
+    "GameSettingsChainMinerKeyBindingMixin",
     "ItemInWorldManagerChainMinerMixin",
     "ClientPlayerChainMinerCommandMixin",
     "MinecraftChainMinerModeSwitchMixin",
     "InventoryPlayerChainMinerScrollLockMixin",
+    "RenderGlobalChainMinerPreviewMixin",
     "GuiIngameChainMinerHudMixin"
   ],
   "injectors": {

@@ -1,6 +1,7 @@
 package com.example.chainminer.mixin;
 
 import com.example.chainminer.ChainMinerConfig;
+import com.example.chainminer.client.ChainMinerKeyBindingBridge;
 import net.minecraft.EntityClientPlayerMP;
 import net.minecraft.EnumChatFormatting;
 import net.minecraft.Minecraft;
@@ -86,6 +87,7 @@ public abstract class ClientPlayerChainMinerCommandMixin {
             if (mouseButton != null) {
                 ChainMinerConfig.setHoldMouseButton(mouseButton);
                 ChainMinerConfig.save();
+                ChainMinerKeyBindingBridge.syncFromConfigNow();
                 this.receiveChatMessage("[ChainMiner] 触发按键已设置为: " + chainMiner$describeBinding(), EnumChatFormatting.GREEN);
                 return true;
             }
@@ -99,6 +101,7 @@ public abstract class ClientPlayerChainMinerCommandMixin {
 
             ChainMinerConfig.setHoldKeyName(keyName);
             ChainMinerConfig.save();
+            ChainMinerKeyBindingBridge.syncFromConfigNow();
             this.receiveChatMessage("[ChainMiner] 触发按键已设置为: " + chainMiner$describeBinding(), EnumChatFormatting.GREEN);
             return true;
         }

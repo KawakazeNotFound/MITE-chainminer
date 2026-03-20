@@ -24,6 +24,10 @@ public final class ChainMinerActivationKeyState {
             return false;
         }
 
+        if (ChainMinerKeyBindingBridge.isActivationDownByRuntimeBinding()) {
+            return true;
+        }
+
         String holdBinding = ChainMinerConfig.getHoldBinding();
         if (!holdBinding.equals(lastHoldBinding)) {
             lastHoldBinding = holdBinding;
