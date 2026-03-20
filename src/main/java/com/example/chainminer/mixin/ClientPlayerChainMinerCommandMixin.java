@@ -1,6 +1,6 @@
-package com.example.chainminer.mixin;
+package com.ryosume.chainminer.mixin;
 
-import com.example.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.ChainMinerConfig;
 import net.minecraft.EntityClientPlayerMP;
 import net.minecraft.EnumChatFormatting;
 import net.minecraft.Minecraft;

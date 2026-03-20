@@ -12,15 +12,15 @@
 ## 关键文件
 - `src/main/resources/fml.mod.json`
 - `src/main/resources/chainminer.mixins.json`
-- `src/main/java/com/example/chainminer/ChainMinerMod.java`
-- `src/main/java/com/example/chainminer/mixin/ItemInWorldManagerChainMinerMixin.java`
+- `src/main/java/com/ryosume/chainminer/ChainMinerMod.java`
+- `src/main/java/com/ryosume/chainminer/mixin/ItemInWorldManagerChainMinerMixin.java`
 
 ## 打包说明
 1. 将 `chainminer/src/main/java` 与 `chainminer/src/main/resources` 编译并打包为一个 jar。
 2. 确保 jar 根目录包含：
    - `fml.mod.json`
    - `chainminer.mixins.json`
-   - `com/example/chainminer/**.class`
+   - `com/ryosume/chainminer/**.class`
 3. 把 jar 放入 FishModLoader 的 `mods` 目录后启动游戏。
 
 ## 配置

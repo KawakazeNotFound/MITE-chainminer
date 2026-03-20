@@ -1,6 +1,6 @@
-package com.example.chainminer.client;
+package com.ryosume.chainminer.client;
 
-import com.example.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.ChainMinerConfig;
 import net.minecraft.GuiButton;
 import net.minecraft.GuiScreen;
 import org.lwjgl.input.Keyboard;

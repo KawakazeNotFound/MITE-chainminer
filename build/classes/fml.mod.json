@@ -8,7 +8,7 @@
   "icon": "assets/chainminer/icon.png",
   "entrypoints": {
     "main": [
-      "com.example.chainminer.ChainMinerMod"
+      "com.ryosume.chainminer.ChainMinerMod"
     ]
   },
   "mixins": [

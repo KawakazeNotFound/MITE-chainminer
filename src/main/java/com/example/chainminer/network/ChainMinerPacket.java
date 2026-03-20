@@ -1,4 +1,4 @@
-package com.example.chainminer.network;
+package com.ryosume.chainminer.network;
 
 import net.minecraft.*;
 

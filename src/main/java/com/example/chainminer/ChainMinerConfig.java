@@ -1,4 +1,4 @@
-package com.example.chainminer;
+package com.ryosume.chainminer;
 
 import java.io.File;
 import java.io.FileInputStream;

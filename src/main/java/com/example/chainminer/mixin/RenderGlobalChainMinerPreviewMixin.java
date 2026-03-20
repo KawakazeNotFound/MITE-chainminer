@@ -1,9 +1,9 @@
-package com.example.chainminer.mixin;
+package com.ryosume.chainminer.mixin;
 
-import com.example.chainminer.ChainMinerConfig;
-import com.example.chainminer.client.ChainMinerActivationKeyState;
-import com.example.chainminer.client.ChainMiningStrategyExecutor;
-import com.example.chainminer.network.ChainMinerPacket;
+import com.ryosume.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.client.ChainMinerActivationKeyState;
+import com.ryosume.chainminer.client.ChainMiningStrategyExecutor;
+import com.ryosume.chainminer.network.ChainMinerPacket;
 import net.minecraft.EntityPlayer;
 import net.minecraft.RaycastCollision;
 import net.minecraft.RenderGlobal;

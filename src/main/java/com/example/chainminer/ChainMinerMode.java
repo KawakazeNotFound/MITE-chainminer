@@ -1,4 +1,4 @@
-package com.example.chainminer;
+package com.ryosume.chainminer;
 
 public enum ChainMinerMode {
     SHAPELESS(0, "不定形", "无约束的26方向连锁"),

@@ -1,6 +1,6 @@
-package com.example.chainminer.client;
+package com.ryosume.chainminer.client;
 
-import com.example.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.ChainMinerConfig;
 import net.minecraft.GameSettings;
 import net.minecraft.KeyBinding;
 import net.minecraft.Minecraft;
@@ -8,7 +8,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public final class ChainMinerKeyBindingBridge {
-    private static final String KEY_DESC = "key.chainminer.activate";
+    private static final String KEY_DESC = "连锁挖矿激活键";
     private static final KeyBinding CHAIN_MINER_KEY = new KeyBinding(KEY_DESC, Keyboard.KEY_GRAVE);
     private static boolean initializedFromConfig = false;
 

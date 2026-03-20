@@ -1,7 +1,7 @@
-package com.example.chainminer;
+package com.ryosume.chainminer;
 
 import com.google.common.eventbus.Subscribe;
-import com.example.chainminer.event.ChainMinerEventHandler;
+import com.ryosume.chainminer.event.ChainMinerEventHandler;
 import net.fabricmc.api.ModInitializer;
 import net.xiaoyu233.fml.reload.event.MITEEvents;
 import net.xiaoyu233.fml.reload.event.PacketRegisterEvent;

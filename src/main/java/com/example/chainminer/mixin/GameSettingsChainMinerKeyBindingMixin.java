@@ -1,6 +1,6 @@
-package com.example.chainminer.mixin;
+package com.ryosume.chainminer.mixin;
 
-import com.example.chainminer.client.ChainMinerKeyBindingBridge;
+import com.ryosume.chainminer.client.ChainMinerKeyBindingBridge;
 import net.minecraft.GameSettings;
 import net.minecraft.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;

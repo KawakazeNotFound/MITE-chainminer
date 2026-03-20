@@ -1,9 +1,9 @@
-package com.example.chainminer.mixin;
+package com.ryosume.chainminer.mixin;
 
-import com.example.chainminer.ChainMinerConfig;
-import com.example.chainminer.ChainMinerMode;
-import com.example.chainminer.client.ChainMinerActivationKeyState;
-import com.example.chainminer.client.ChainMiningStrategyExecutor;
+import com.ryosume.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.ChainMinerMode;
+import com.ryosume.chainminer.client.ChainMinerActivationKeyState;
+import com.ryosume.chainminer.client.ChainMiningStrategyExecutor;
 import net.minecraft.FontRenderer;
 import net.minecraft.GuiIngame;
 import net.minecraft.Minecraft;

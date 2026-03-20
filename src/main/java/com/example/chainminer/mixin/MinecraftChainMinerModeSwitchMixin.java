@@ -1,7 +1,7 @@
-package com.example.chainminer.mixin;
+package com.ryosume.chainminer.mixin;
 
-import com.example.chainminer.ChainMinerConfig;
-import com.example.chainminer.client.ChainMinerActivationKeyState;
+import com.ryosume.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.client.ChainMinerActivationKeyState;
 import net.minecraft.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;

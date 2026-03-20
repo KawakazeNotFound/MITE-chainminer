@@ -1,7 +1,7 @@
-package com.example.chainminer.client;
+package com.ryosume.chainminer.client;
 
-import com.example.chainminer.ChainMinerConfig;
-import com.example.chainminer.network.ChainMinerPacket;
+import com.ryosume.chainminer.ChainMinerConfig;
+import com.ryosume.chainminer.network.ChainMinerPacket;
 import net.minecraft.Entity;
 import net.minecraft.EntityPlayer;
 import net.minecraft.Minecraft;

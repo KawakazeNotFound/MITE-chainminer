@@ -1,6 +1,6 @@
-package com.example.chainminer.event;
+package com.ryosume.chainminer.event;
 
-import com.example.chainminer.network.ChainMinerPacket;
+import com.ryosume.chainminer.network.ChainMinerPacket;
 import net.xiaoyu233.fml.reload.event.PacketRegisterEvent;
 
 /**
