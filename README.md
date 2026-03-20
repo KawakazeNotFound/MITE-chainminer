@@ -35,7 +35,7 @@
    - `mode=0`（当前连锁模式：0=不定形，1=小隧道，2=逃生通道）
 
 - 聊天命令：
-   - `/chainminer key <按键名|mouse3/mouse4/mouse5>` 设置激活按键
+   - 激活按键请在 `选项 -> 按键设定` 中修改“连锁挖矿激活键”
    - `/chainminer enable <true/false>` 启用/禁用连锁
    - `/chainminer limit <1-512>` 设置连锁数量限制
    - `/chainminer hud <x> <y>` 设置激活提示坐标

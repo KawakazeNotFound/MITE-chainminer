@@ -1,19 +1,15 @@
 package com.example.chainminer.mixin;
 
 import com.example.chainminer.ChainMinerConfig;
-import com.example.chainminer.client.ChainMinerKeyBindingBridge;
 import net.minecraft.EntityClientPlayerMP;
 import net.minecraft.EnumChatFormatting;
 import net.minecraft.Minecraft;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Locale;
 
 @Mixin(EntityClientPlayerMP.class)
 public abstract class ClientPlayerChainMinerCommandMixin {
@@ -58,7 +54,7 @@ public abstract class ClientPlayerChainMinerCommandMixin {
 
         if (parts.length == 1 || parts[1].equalsIgnoreCase("help")) {
             this.receiveChatMessage("[ChainMiner] 用法:", EnumChatFormatting.YELLOW);
-            this.receiveChatMessage("  /chainminer key <按键名|mouse3/mouse4/mouse5>", EnumChatFormatting.YELLOW);
+            this.receiveChatMessage("  /chainminer key (已移除，请在 选项->按键设定 中设置)", EnumChatFormatting.YELLOW);
             this.receiveChatMessage("  /chainminer enable <true/false>", EnumChatFormatting.YELLOW);
             this.receiveChatMessage("  /chainminer limit <1-512>", EnumChatFormatting.YELLOW);
             this.receiveChatMessage("  /chainminer hud <x> <y>", EnumChatFormatting.YELLOW);
@@ -78,31 +74,7 @@ public abstract class ClientPlayerChainMinerCommandMixin {
         }
 
         if (sub.equals("key")) {
-            if (parts.length < 3) {
-                this.receiveChatMessage("[ChainMiner] 用法: /chainminer key <按键名|mouse3/mouse4/mouse5>", EnumChatFormatting.RED);
-                return true;
-            }
-
-            Integer mouseButton = chainMiner$parseMouseButton(parts[2]);
-            if (mouseButton != null) {
-                ChainMinerConfig.setHoldMouseButton(mouseButton);
-                ChainMinerConfig.save();
-                ChainMinerKeyBindingBridge.syncFromConfigNow();
-                this.receiveChatMessage("[ChainMiner] 触发按键已设置为: " + chainMiner$describeBinding(), EnumChatFormatting.GREEN);
-                return true;
-            }
-
-            String keyName = parts[2].toUpperCase(Locale.ROOT);
-            int keyCode = Keyboard.getKeyIndex(keyName);
-            if (keyCode <= 0) {
-                this.receiveChatMessage("[ChainMiner] 无效按键: " + parts[2], EnumChatFormatting.RED);
-                return true;
-            }
-
-            ChainMinerConfig.setHoldKeyName(keyName);
-            ChainMinerConfig.save();
-            ChainMinerKeyBindingBridge.syncFromConfigNow();
-            this.receiveChatMessage("[ChainMiner] 触发按键已设置为: " + chainMiner$describeBinding(), EnumChatFormatting.GREEN);
+            this.receiveChatMessage("[ChainMiner] 键位命令已移除，请在 选项 -> 按键设定 中修改“连锁挖矿激活键”", EnumChatFormatting.YELLOW);
             return true;
         }
 
@@ -170,31 +142,6 @@ public abstract class ClientPlayerChainMinerCommandMixin {
 
         this.receiveChatMessage("[ChainMiner] 未知子命令: " + parts[1] + "，输入 /chainminer help 查看用法", EnumChatFormatting.RED);
         return true;
-    }
-
-    private Integer chainMiner$parseMouseButton(String raw) {
-        if (raw == null) {
-            return null;
-        }
-
-        String value = raw.trim().toUpperCase(Locale.ROOT);
-        if (value.startsWith("MOUSE")) {
-            String number = value.substring("MOUSE".length()).trim();
-            if (number.isEmpty()) {
-                return null;
-            }
-
-            try {
-                int button = Integer.parseInt(number);
-                if (button >= 0) {
-                    return button;
-                }
-            } catch (NumberFormatException ignored) {
-                return null;
-            }
-        }
-
-        return null;
     }
 
     private String chainMiner$describeBinding() {
