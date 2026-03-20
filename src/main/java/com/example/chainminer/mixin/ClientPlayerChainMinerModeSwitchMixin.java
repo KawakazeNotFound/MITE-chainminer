@@ -1,9 +1,7 @@
 package com.example.chainminer.mixin;
 
 import com.example.chainminer.ChainMinerConfig;
-import com.example.chainminer.ChainMinerMode;
 import net.minecraft.EntityClientPlayerMP;
-import net.minecraft.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,9 +33,6 @@ public abstract class ClientPlayerChainMinerModeSwitchMixin {
         if (currentScroll > 0) {
             ChainMinerConfig.cycleMode();
             ChainMinerConfig.save();
-            EntityClientPlayerMP player = (EntityClientPlayerMP) (Object) this;
-            ChainMinerMode mode = ChainMinerConfig.getCurrentMode();
-            player.addChatMessage("[ChainMiner] 已切换至: " + mode.getDisplayName() + " - " + mode.getDescription());
         }
     }
 }
