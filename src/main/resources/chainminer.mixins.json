@@ -7,7 +7,7 @@
   "client": [
     "ItemInWorldManagerChainMinerMixin",
     "ClientPlayerChainMinerCommandMixin",
-    "ClientPlayerChainMinerModeSwitchMixin",
+    "MinecraftChainMinerModeSwitchMixin",
     "GuiIngameChainMinerHudMixin"
   ],
   "injectors": {

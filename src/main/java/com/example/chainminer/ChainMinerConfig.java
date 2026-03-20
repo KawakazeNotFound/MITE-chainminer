@@ -195,6 +195,10 @@ public final class ChainMinerConfig {
         ChainMinerConfig.currentMode = ChainMinerConfig.currentMode.next();
     }
 
+    public static void cycleModeBackward() {
+        ChainMinerConfig.currentMode = ChainMinerConfig.currentMode.previous();
+    }
+
     private static boolean parseBoolean(String value, boolean fallback) {
         if (value == null) {
             return fallback;

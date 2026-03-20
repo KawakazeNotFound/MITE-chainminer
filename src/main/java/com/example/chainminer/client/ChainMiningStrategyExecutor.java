@@ -5,6 +5,7 @@ import com.example.chainminer.network.ChainMinerPacket;
 import net.minecraft.Entity;
 import net.minecraft.EntityPlayer;
 import net.minecraft.Minecraft;
+import net.minecraft.RaycastCollision;
 import net.minecraft.Vec3;
 import net.minecraft.World;
 
@@ -45,6 +46,34 @@ public final class ChainMiningStrategyExecutor {
         }
 
         return result;
+    }
+
+    public static int previewCurrentTargetChainCount() {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft == null || minecraft.theWorld == null || minecraft.thePlayer == null) {
+            return 0;
+        }
+
+        RaycastCollision hitResult = minecraft.objectMouseOver;
+        if (hitResult == null || !hitResult.isBlock()) {
+            return 0;
+        }
+
+        int x = hitResult.block_hit_x;
+        int y = hitResult.block_hit_y;
+        int z = hitResult.block_hit_z;
+        if (y < 0 || y > 255) {
+            return 0;
+        }
+
+        int blockId = hitResult.getBlockHitID();
+        if (blockId <= 0) {
+            return 0;
+        }
+
+        int sideOrdinal = hitResult.face_hit == null ? 0 : hitResult.face_hit.ordinal();
+        List<ChainMinerPacket.BlockBreak> blocks = executeChainMining(x, y, z, blockId, sideOrdinal);
+        return blocks.size();
     }
 
     private static void executeShapeless(World world, int originX, int originY, int originZ, int blockId, int sideOrdinal, List<ChainMinerPacket.BlockBreak> result) {
@@ -137,35 +166,21 @@ public final class ChainMiningStrategyExecutor {
         int dirY = player.rotationPitch > 0 ? -1 : 1;
 
         int chainLimit = ChainMinerConfig.getChainLimit() - 1;
-        int queued = 1;
-
         for (int step = 1; step <= chainLimit && step <= 10; step++) {
-            int baseX = originX + dirX * step;
-            int baseY = originY + dirY * step;
-            int baseZ = originZ + dirZ * step;
+            int nx = originX + dirX * step;
+            int ny = originY + dirY * step;
+            int nz = originZ + dirZ * step;
 
-            // 3x3 cross-section for each staircase step
-            for (int offsetX = -1; offsetX <= 1; offsetX++) {
-                for (int offsetZ = -1; offsetZ <= 1; offsetZ++) {
-                    int nx = baseX + offsetX;
-                    int ny = baseY;
-                    int nz = baseZ + offsetZ;
-
-                    if (ny < 0 || ny > 255) {
-                        continue;
-                    }
-
-                    int currentBlockId = world.getBlockId(nx, ny, nz);
-                    if (currentBlockId == blockId) {
-                        result.add(new ChainMinerPacket.BlockBreak(nx, ny, nz, sideOrdinal));
-                        queued++;
-
-                        if (queued >= chainLimit) {
-                            return;
-                        }
-                    }
-                }
+            if (ny < 0 || ny > 255) {
+                break;
             }
+
+            int currentBlockId = world.getBlockId(nx, ny, nz);
+            if (currentBlockId != blockId) {
+                break;
+            }
+
+            result.add(new ChainMinerPacket.BlockBreak(nx, ny, nz, sideOrdinal));
         }
     }
 

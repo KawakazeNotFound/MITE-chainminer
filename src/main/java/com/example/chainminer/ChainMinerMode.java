@@ -40,4 +40,9 @@ public enum ChainMinerMode {
         ChainMinerMode[] modes = values();
         return modes[(ordinal() + 1) % modes.length];
     }
+
+    public ChainMinerMode previous() {
+        ChainMinerMode[] modes = values();
+        return modes[(ordinal() - 1 + modes.length) % modes.length];
+    }
 }

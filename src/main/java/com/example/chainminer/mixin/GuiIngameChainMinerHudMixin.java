@@ -3,6 +3,7 @@ package com.example.chainminer.mixin;
 import com.example.chainminer.ChainMinerConfig;
 import com.example.chainminer.ChainMinerMode;
 import com.example.chainminer.client.ChainMinerActivationKeyState;
+import com.example.chainminer.client.ChainMiningStrategyExecutor;
 import net.minecraft.FontRenderer;
 import net.minecraft.GuiIngame;
 import net.minecraft.Minecraft;
@@ -16,7 +17,7 @@ public class GuiIngameChainMinerHudMixin {
     private static final String ACTIVATED_TEXT = "[ChainMiner] 已激活";
     private static final int HUD_COLOR = 0x55FF55;
     private static final int MODE_COLOR = 0xFFFF00;
-    private static boolean CONFIG_LOADED = false;
+    private static final int COUNT_COLOR = 0x55FFFF;
 
     @Inject(method = "renderGameOverlay(FZII)V", at = @At("TAIL"), require = 0)
     private void chainMiner$renderActivationHint(float partialTicks, boolean hasScreen, int mouseX, int mouseY, CallbackInfo ci) {
@@ -34,11 +35,6 @@ public class GuiIngameChainMinerHudMixin {
             return;
         }
 
-        if (!CONFIG_LOADED) {
-            ChainMinerConfig.load(minecraft.mcDataDir);
-            CONFIG_LOADED = true;
-        }
-
         int hudX = ChainMinerConfig.getHudX();
         int hudY = ChainMinerConfig.getHudY();
 
@@ -47,5 +43,9 @@ public class GuiIngameChainMinerHudMixin {
         ChainMinerMode mode = ChainMinerConfig.getCurrentMode();
         String modeText = "模式: " + mode.getDisplayName();
         fontRenderer.drawStringWithShadow(modeText, hudX, hudY + 10, MODE_COLOR);
+
+        int previewCount = ChainMiningStrategyExecutor.previewCurrentTargetChainCount();
+        String countText = "预计连锁: " + previewCount + " 个";
+        fontRenderer.drawStringWithShadow(countText, hudX, hudY + 20, COUNT_COLOR);
     }
 }

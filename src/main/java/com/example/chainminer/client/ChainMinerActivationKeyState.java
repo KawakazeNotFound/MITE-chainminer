@@ -1,12 +1,14 @@
 package com.example.chainminer.client;
 
 import com.example.chainminer.ChainMinerConfig;
+import net.minecraft.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.Locale;
 
 public final class ChainMinerActivationKeyState {
+    private static boolean configLoaded = false;
     private static String lastHoldBinding = "";
     private static boolean lastIsMouseBinding = false;
     private static int lastHoldKeyCode = Keyboard.KEY_GRAVE;
@@ -16,6 +18,8 @@ public final class ChainMinerActivationKeyState {
     }
 
     public static boolean isActivationDown() {
+        ensureConfigLoaded();
+
         if (!ChainMinerConfig.isEnabled()) {
             return false;
         }
@@ -47,5 +51,19 @@ public final class ChainMinerActivationKeyState {
         }
 
         return Keyboard.isKeyDown(lastHoldKeyCode);
+    }
+
+    private static void ensureConfigLoaded() {
+        if (configLoaded) {
+            return;
+        }
+
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft == null) {
+            return;
+        }
+
+        ChainMinerConfig.load(minecraft.mcDataDir);
+        configLoaded = true;
     }
 }
